@@ -351,7 +351,7 @@ class SMTPConnection
     */
    public SMTPConnection(Envelope envelope) throws IOException
    {
-      connection = new Socket("192.168.2.2", SMTP_PORT);/* Fill in */;
+      connection = new Socket(envelope.DestAddr, SMTP_PORT);
       fromServer = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       toServer = new DataOutputStream(connection.getOutputStream());
 
@@ -361,14 +361,14 @@ class SMTPConnection
       String text = fromServer.readLine();
       System.out.println(parseReply(text));
       if (parseReply(text) != 220){
+         System.out.println("Reply code not 220");
          throw new IOException("Reply code not 220");
-         //System.out.println("Reply code not 220");
       }
       /* SMTP handshake. We need the name of the local machine.
       Send the appropriate SMTP handshake command. */
-      String localhost = "192.168.2.2";
+      String localhost = "157.201.194.201";
       System.out.println("LOCALHOST: " + localhost);
-      sendCommand("HELLO " + localhost + CRLF, 250);
+      sendCommand("HELO " + localhost + CRLF, 250);
 
       isConnected = true;
    }
@@ -386,7 +386,7 @@ class SMTPConnection
       exception thrown from sendCommand(). */
       /* Fill in */
       sendCommand("MAIL FROM: " + envelope.Sender + CRLF, 250);
-      sendCommand("RECIPIENT TO: " + envelope.Recipient + CRLF, 250);
+      sendCommand("RCPT TO: " + envelope.Recipient + CRLF, 250);
       sendCommand("DATA" + CRLF, 354);
    }
    
@@ -424,7 +424,7 @@ class SMTPConnection
       parameter rc. If not, throw an IOException. */
       /* Fill in */
       System.out.println("Command to server: " + command + CRLF);
-      toServer.writeBytes(command + CRLF);
+      toServer.writeBytes(command);
 
       String text = fromServer.readLine();
       System.out.println("Server reply: " + text);
